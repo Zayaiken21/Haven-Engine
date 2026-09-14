@@ -7,7 +7,6 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
-    numInstances: 1
     envVars:
       - key: DATA_DIR
         value: ./data
@@ -15,3 +14,7 @@ services:
         value: https://zayaiken21.github.io
       - key: CORS_ORIGINS
         value: https://zayaiken21.github.io
+      - key: MODEL_PROVIDER
+        value: none
+      - key: MODEL_NAME
+        value: none
