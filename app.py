@@ -16,7 +16,7 @@ FRONTEND_ORIGIN = os.getenv('FRONTEND_ORIGIN', 'https://zayaiken21.github.io')
 CORS_ORIGINS = [x.strip() for x in os.getenv('CORS_ORIGINS', FRONTEND_ORIGIN).split(',') if x.strip()]
 if '*' in CORS_ORIGINS: CORS_ORIGINS = ['*']
 
-app = FastAPI(title='The Haven Engine', version='6.0.0', description='Deterministic engineering, project-generation and build orchestration API.')
+app = FastAPI(title='The Haven Engine', version='7.0.0', description='Deterministic engineering, project-generation and build orchestration API.')
 app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS, allow_credentials=False, allow_methods=['*'], allow_headers=['*'])
 
 class Chat(BaseModel):
@@ -129,10 +129,10 @@ def generate(kind, request):
 
 @app.get('/')
 def root():
-    return {'service':'The Haven Engine','status':'online','version':'6.0.0','frontend':'https://zayaiken21.github.io/The-Haven/','health':'/health','capabilities':'/capabilities','message':'The engine is running. This endpoint intentionally returns JSON instead of 404.'}
+    return {'service':'The Haven Engine','status':'online','version':'7.0.0','frontend':'https://zayaiken21.github.io/The-Haven/','health':'/health','capabilities':'/capabilities','message':'The engine is running. This endpoint intentionally returns JSON instead of 404.'}
 
 @app.get('/health')
-def health(): return {'ok':True,'service':'the-haven-engine','version':'6.0.0','time':now(),'data_dir':str(DATA),'data_dir_exists':DATA.exists()}
+def health(): return {'ok':True,'service':'the-haven-engine','version':'7.0.0','time':now(),'data_dir':str(DATA),'data_dir_exists':DATA.exists()}
 
 @app.get('/capabilities')
 def capabilities(): return {'ok':True,'capabilities':CAPABILITIES,'model_adapter':{'configured':bool(os.getenv('MODEL_API_KEY')),'provider':os.getenv('MODEL_PROVIDER','none'),'model':os.getenv('MODEL_NAME','')},'endpoints':['/','/health','/capabilities','/languages','/chat','/design/spec','/projects/build','/projects/{id}/download','/uploads']}
@@ -152,7 +152,7 @@ def chat(c:Chat):
     elif 'root' in q or 'not found' in q or '404' in q: reply=KNOWLEDGE['root']
     elif 'file' in q or 'folder' in q: reply='I can inspect supplied project filenames, classify languages, validate safe paths, and build a deterministic project tree. Current files: '+(', '.join(c.files) if c.files else 'none.')
     else: reply='The Haven Engine is online. I can answer supported engineering questions, produce deterministic project scaffolds, generate UX/UI specifications, validate project files, and package builds. For unconstrained novel code generation, connect a server-side model adapter; do not put provider keys in the browser.'
-    remember('assistant',reply); return {'reply':reply,'engine':'The Haven Engine','version':'6.0.0'}
+    remember('assistant',reply); return {'reply':reply,'engine':'The Haven Engine','version':'7.0.0'}
 
 @app.post('/design/spec')
 def design(d:DesignRequest): return {'ok':True,'spec':design_spec(d)}
