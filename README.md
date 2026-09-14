@@ -1,53 +1,19 @@
-# The Haven Engine
+# The Haven Engine v3
 
-Dynamic backend for The Haven. Designed for Render.
+FastAPI backend for The Haven.
 
-## Render deployment
+### Endpoints
+- `/` service information (fixes the old Render root 404)
+- `/health` Render health check
+- `/capabilities` capability map
+- `/chat` engineering assistant rules
+- `/design/spec` deterministic UX/UI design specification
+- `/projects/build` project scaffolding/build job
+- `/projects/{id}/download` ZIP export
+- `/uploads` asset upload
 
-Create a Render Web Service from this repository.
+### Render storage
+`DATA_DIR=/var/data`. Attach a Persistent Disk with mount path `/var/data`. The included Blueprint declares a 10 GB disk. Render currently requires a paid service plan for Persistent Disks.
 
-- Build: `pip install -r requirements.txt`
-- Start: `uvicorn app:app --host 0.0.0.0 --port $PORT`
-- Health: `/health`
-
-### Persistent storage
-
-Attach a Render Persistent Disk and mount it at:
-
-`/var/data`
-
-The included `render.yaml` uses `/var/data` as DATA_DIR.
-
-This is where The Haven stores:
-- chat memory JSON
-- generated project JSON
-- uploaded files
-- generated ZIPs
-
-Render's filesystem is ephemeral unless you attach a persistent disk.
-
-## Important: GitHub is NOT unlimited storage
-
-Do not store chat history, videos, pictures, and arbitrary uploads in a Git repository. GitHub has repository/file limits. GitHub should be the source-control and optional backup layer.
-
-For large production media, add an object-storage adapter later. For shared relational memory, add Postgres later.
-
-## No AI
-
-This engine does not call OpenAI, Anthropic, Gemini, Claude, or another AI model.
-
-The "knowledge" layer is deterministic. Expand it with:
-- language specifications
-- project templates
-- AST/parser adapters
-- validators
-- compiler adapters
-- test runners
-- dependency manifests
-- documentation indexes
-
-## Security
-
-Do not put GitHub tokens in the browser. If GitHub backup is added, tokens belong only in Render environment variables or, preferably, a GitHub App with minimum permissions.
-
-Uploaded files should eventually receive quotas, authentication, content-type checks, malware scanning, and per-user namespaces before public deployment.
+### Scaling
+A single persistent disk is single-instance storage. For multi-instance scaling, move metadata to Postgres and files to object storage rather than sharing local disk.
