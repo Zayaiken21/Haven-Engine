@@ -16,7 +16,7 @@ FRONTEND_ORIGIN = os.getenv('FRONTEND_ORIGIN', 'https://zayaiken21.github.io')
 CORS_ORIGINS = [x.strip() for x in os.getenv('CORS_ORIGINS', FRONTEND_ORIGIN).split(',') if x.strip()]
 if '*' in CORS_ORIGINS: CORS_ORIGINS = ['*']
 
-app = FastAPI(title='The Haven Engine', version='3.0.0', description='Deterministic engineering, project-generation and build orchestration API.')
+app = FastAPI(title='The Haven Engine', version='4.0.0', description='Deterministic engineering, project-generation and build orchestration API.')
 app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS, allow_credentials=False, allow_methods=['*'], allow_headers=['*'])
 
 class Chat(BaseModel):
@@ -47,15 +47,17 @@ CAPABILITIES = {
  'games': ['2D canvas scaffolds','3D WebGL/Three.js project scaffolds','game-loop templates','input/UI scaffolds','scene/entity manifests'],
  'apps': ['responsive web apps','PWA scaffolds','API client scaffolds','dashboard/UI component scaffolds'],
  'ux_ui': ['design tokens','responsive layout specs','accessibility checklist','interaction states','component manifests'],
- 'quality': ['path safety','manifest generation','basic static validation','health checks','project packaging']
+ 'quality': ['path safety','manifest generation','basic static validation','health checks','project packaging','ephemeral-workspace safety'],
+ 'languages': sorted(LANG.keys()),
+ 'design': ['UX flows','UI component states','responsive layout','accessibility','home screens','navigation','menus','design tokens','game HUDs','game menus','2D/3D interaction patterns']
 }
 
 KNOWLEDGE = {
  'github': 'GitHub is the source-control and deployment source. It is not unlimited runtime storage; large generated binaries and user uploads belong in persistent/object storage.',
- 'render': 'Render runs The Haven Engine. DATA_DIR is configured for /var/data so generated workspaces, uploads and memory can survive restarts when a persistent disk is attached.',
- 'storage': 'Runtime data is stored below DATA_DIR: memory.json, projects/, and uploads/. For production scale, move relational metadata to Postgres and large files to object storage.',
+ 'render': 'Render runs The Haven Engine. On the free plan, the filesystem is intentionally ephemeral: generated workspaces, uploads and memory can disappear when Render restarts or spins the service down. Keep important source in GitHub or another durable datastore.',
+ 'storage': 'Free operation uses the service filesystem only as temporary workspace storage. For durable production data, use a database for metadata and object storage for generated files.',
  'root': 'The root URL is a service information endpoint. Use /health for health checks, /capabilities for supported modules, /chat for questions, /projects/build for builds, and /projects/{id}/download for ZIP exports.',
- 'limitations': 'The core engine is deterministic. It can reliably scaffold, validate, organize and package projects, but it is not itself a general-purpose generative AI model. A model provider can be added behind a server-side adapter later without exposing keys to the browser.'
+ 'limitations': 'The core engine is a deterministic engineering system, not a general-purpose generative model. It supports many languages and structured web, app, game and UX/UI scaffolds. A server-side model adapter can be enabled later with a provider key stored only in Render environment variables.'
 }
 
 def now(): return datetime.now(timezone.utc).isoformat()
@@ -126,10 +128,10 @@ def generate(kind, request):
 
 @app.get('/')
 def root():
-    return {'service':'The Haven Engine','status':'online','version':'3.0.0','frontend':'https://zayaiken21.github.io/The-Haven/','health':'/health','capabilities':'/capabilities','message':'The engine is running. This endpoint intentionally returns JSON instead of 404.'}
+    return {'service':'The Haven Engine','status':'online','version':'4.0.0','frontend':'https://zayaiken21.github.io/The-Haven/','health':'/health','capabilities':'/capabilities','message':'The engine is running. This endpoint intentionally returns JSON instead of 404.'}
 
 @app.get('/health')
-def health(): return {'ok':True,'service':'the-haven-engine','version':'3.0.0','time':now(),'data_dir':str(DATA),'data_dir_exists':DATA.exists()}
+def health(): return {'ok':True,'service':'the-haven-engine','version':'4.0.0','time':now(),'data_dir':str(DATA),'data_dir_exists':DATA.exists()}
 
 @app.get('/capabilities')
 def capabilities(): return {'ok':True,'capabilities':CAPABILITIES,'endpoints':['/','/health','/capabilities','/chat','/design/spec','/projects/build','/projects/{id}/download','/uploads']}
@@ -145,7 +147,7 @@ def chat(c:Chat):
     elif 'root' in q or 'not found' in q or '404' in q: reply=KNOWLEDGE['root']
     elif 'file' in q or 'folder' in q: reply='I can inspect supplied project filenames, classify languages, validate safe paths, and build a deterministic project tree. Current files: '+(', '.join(c.files) if c.files else 'none.')
     else: reply='The Haven Engine is online. I can answer supported engineering questions, produce deterministic project scaffolds, generate UX/UI specifications, validate project files, and package builds. For unconstrained novel code generation, connect a server-side model adapter; do not put provider keys in the browser.'
-    remember('assistant',reply); return {'reply':reply,'engine':'The Haven Engine','version':'3.0.0'}
+    remember('assistant',reply); return {'reply':reply,'engine':'The Haven Engine','version':'4.0.0'}
 
 @app.post('/design/spec')
 def design(d:DesignRequest): return {'ok':True,'spec':design_spec(d)}

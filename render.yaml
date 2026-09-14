@@ -2,7 +2,7 @@ services:
   - type: web
     name: haven-engine
     runtime: python
-    plan: starter
+    plan: free
     rootDir: haven-engine
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
@@ -10,12 +10,8 @@ services:
     numInstances: 1
     envVars:
       - key: DATA_DIR
-        value: /var/data
+        value: ./data
       - key: FRONTEND_ORIGIN
         value: https://zayaiken21.github.io
       - key: CORS_ORIGINS
         value: https://zayaiken21.github.io
-    disk:
-      name: haven-data
-      mountPath: /var/data
-      sizeGB: 10
